@@ -1,15 +1,10 @@
-import './App.css'
+import React from 'react'
 
-function App() {
-
+const App = () => {
   return (
-    <>
-      <div class="flex items-center justify-center h-screen">
-        <p class="text-center text-2xl font-semibold">
-          Test
-        </p>
-      </div>
-    </>
+    <div>
+      
+    </div>
   )
 }
 

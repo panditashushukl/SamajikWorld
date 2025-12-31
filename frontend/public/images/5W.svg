@@ -1,0 +1,155 @@
+<svg width="100%" height="100%" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Background with subtle grain texture -->
+  <defs>
+    <!-- Animated background gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#1a0a1a">
+        <animate attributeName="stop-color" values="#1a0a1a;#0a0a1a;#1a0a1a" dur="6s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+    
+    <!-- Main futuristic gradient with more stops -->
+    <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff0080">
+        <animate attributeName="stop-color" values="#ff0080;#ff4080;#ff0080" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="25%" stop-color="#ff007a"/>
+      <stop offset="50%" stop-color="#ff00ff">
+        <animate attributeName="stop-color" values="#ff00ff;#ff66ff;#ff00ff" dur="5s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="75%" stop-color="#8000ff"/>
+      <stop offset="100%" stop-color="#00ffe7">
+        <animate attributeName="stop-color" values="#00ffe7;#66ffe7;#00ffe7" dur="3s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    
+    <!-- Secondary gradient for depth -->
+    <linearGradient id="secondaryGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00ffe7" stop-opacity="0.3"/>
+      <stop offset="50%" stop-color="#ff00ff" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ff0080" stop-opacity="0.3"/>
+    </linearGradient>
+    
+    <!-- Enhanced multi-layer glow -->
+    <filter id="superGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <!-- Outer glow -->
+      <feGaussianBlur stdDeviation="60" result="glow1"/>
+      <feColorMatrix in="glow1" values="1 0 0 0 0  0 0 1 0 0  0 0 1 0 0  0 0 0 0.8 0"/>
+      
+      <!-- Middle glow -->
+      <feGaussianBlur stdDeviation="30" result="glow2"/>
+      <feColorMatrix in="glow2" values="1 0 1 0 0  0 1 0 0 0  1 0 1 0 0  0 0 0 0.6 0"/>
+      
+      <!-- Inner glow -->
+      <feGaussianBlur stdDeviation="15" result="glow3"/>
+      <feColorMatrix in="glow3" values="0 1 1 0 0  1 0 1 0 0  1 1 0 0 0  0 0 0 0.4 0"/>
+      
+      <!-- Combine all glows -->
+      <feMerge>
+        <feMergeNode in="glow1"/>
+        <feMergeNode in="glow2"/>
+        <feMergeNode in="glow3"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Dynamic shadow with animation -->
+    <filter id="dynamicShadow" x="-100%" y="-100%" width="300%" height="300%">
+      <feDropShadow dx="0" dy="0" stdDeviation="35" flood-color="#00ffe7" flood-opacity="0.6">
+        <animate attributeName="stdDeviation" values="35;50;35" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="flood-opacity" values="0.6;0.8;0.6" dur="4s" repeatCount="indefinite"/>
+      </feDropShadow>
+      <feDropShadow dx="0" dy="20" stdDeviation="25" flood-color="#ff00ff" flood-opacity="0.4"/>
+    </filter>
+    
+    <!-- Subtle texture pattern -->
+    <pattern id="texture" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#ffffff" opacity="0.02"/>
+      <circle cx="2" cy="2" r="0.5" fill="#ffffff" opacity="0.05"/>
+    </pattern>
+    
+    <!-- Animated particles -->
+    <filter id="particles">
+      <feTurbulence baseFrequency="0.02" numOctaves="3" result="noise">
+        <animate attributeName="baseFrequency" values="0.02;0.05;0.02" dur="20s" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feColorMatrix in="noise" values="0 0 0 0 0  0 0 0 0 1  0 0 0 0 1  0 0 0 0.1 0"/>
+    </filter>
+  </defs>
+  
+  <!-- Animated background -->
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+  
+  <!-- Texture overlay -->
+  <rect width="100%" height="100%" fill="url(#texture)"/>
+  
+  <!-- Particle effect background -->
+  <rect width="100%" height="100%" fill="white" filter="url(#particles)" opacity="0.1"/>
+  
+  <!-- Background glow circles for ambiance -->
+  <circle cx="30%" cy="30%" r="200" fill="url(#mainGrad)" opacity="0.1" filter="url(#superGlow)">
+    <animate attributeName="r" values="200;250;200" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.1;0.2;0.1" dur="8s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="70%" cy="70%" r="180" fill="url(#secondaryGrad)" opacity="0.08" filter="url(#superGlow)">
+    <animate attributeName="r" values="180;220;180" dur="10s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.08;0.15;0.08" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Main logo background shape for more depth -->
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Orbitron', 'Exo 2', 'Rajdhani', sans-serif"
+        font-size="720" font-weight="900"
+        fill="url(#secondaryGrad)" 
+        opacity="0.3">
+    5W
+  </text>
+  
+  <!-- Main logo text with enhanced effects -->
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Orbitron', 'Exo 2', 'Rajdhani', sans-serif"
+        font-size="700" font-weight="900"
+        fill="url(#mainGrad)" 
+        filter="url(#superGlow) url(#dynamicShadow)"
+        letter-spacing="0.1em">
+    5W
+    <!-- Subtle scaling animation -->
+    <animateTransform attributeName="transform" type="scale" 
+                      values="1;1.02;1" dur="6s" repeatCount="indefinite"/>
+  </text>
+  
+  <!-- Accent highlights on the letters -->
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Orbitron', 'Exo 2', 'Rajdhani', sans-serif"
+        font-size="700" font-weight="900"
+        fill="none" 
+        stroke="url(#mainGrad)"
+        stroke-width="3"
+        opacity="0.6"
+        letter-spacing="0.1em">
+    5W
+  </text>
+  
+  <!-- Floating light orbs for extra magic -->
+  <circle cx="35%" cy="35%" r="3" fill="#00ffe7" opacity="0.8" filter="url(#superGlow)">
+    <animate attributeName="cy" values="35%;32%;35%" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="65%" cy="30%" r="2" fill="#ff00ff" opacity="0.6" filter="url(#superGlow)">
+    <animate attributeName="cx" values="65%;68%;65%" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.9;0.6" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <circle cx="70%" cy="65%" r="2.5" fill="#ff0080" opacity="0.7" filter="url(#superGlow)">
+    <animate attributeName="cy" values="65%;68%;65%" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Subtle scanline effect -->
+  <rect x="0" y="40%" width="100%" height="2" fill="url(#mainGrad)" opacity="0.1">
+    <animate attributeName="y" values="40%;60%;40%" dur="8s" repeatCount="indefinite"/>
+  </rect>
+</svg>
