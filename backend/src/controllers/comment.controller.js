@@ -46,9 +46,11 @@ const getVideoComments = asyncHandler(async (req, res) => {
 const addComment = asyncHandler(async (req, res) => {
     const {videoId} = req.params
     const userId = req.user?._id
+    
     const {content} = req.body
+    
     if (!userId) {
-        throw new ApiError(400, "Please login to Comment.")
+        throw new ApiError(401, "Please login to Comment.")
     }
     if (!videoId || !isValidObjectId(videoId)) {
         throw new ApiError(400, "Invalid Video id")
@@ -68,13 +70,14 @@ const addComment = asyncHandler(async (req, res) => {
         owner: userId
     })
 
+    const populatedComment = await Comment.findById(comment._id).populate('owner', 'username avatar fullName _id')
     
     return res
     .status(200)
     .json(
         new ApiResponse(
             200,
-            comment,
+            populatedComment,
             "Comment added successfully"
         )
     )

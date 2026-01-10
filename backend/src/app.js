@@ -45,4 +45,23 @@ app.use(`${apiVersion}likes`, likeRouter)
 app.use(`${apiVersion}playlist`, playlistRouter)
 app.use(`${apiVersion}dashboard`, dashboardRouter)
 
+// Error handling middleware (must be last)
+app.use((err, req, res, next) => {
+  let status = err.statusCode || err.code || 500
+  
+  // Validate status code is a valid HTTP status code
+  if (typeof status !== 'number' || status < 100 || status > 599) {
+    status = 500
+  }
+  
+  const message = err.message || "Something went wrong"
+  
+  return res.status(status).json({
+    statusCode: status,
+    data: null,
+    message: message,
+    success: false
+  })
+})
+
 export default app;

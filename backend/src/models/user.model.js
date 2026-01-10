@@ -44,6 +44,39 @@ const userSchema = new mongoose.Schema(
     },
     refreshToken: {
       type: String
+    },
+    notifications: {
+      email: {
+        type: Boolean,
+        default: true
+      },
+      push: {
+        type: Boolean,
+        default: false
+      },
+      desktop: {
+        type: Boolean,
+        default: true
+      },
+      streamAlerts: {
+        type: Boolean,
+        default: true
+      }
+    },
+    privacy: {
+      profileVisibility: {
+        type: String,
+        enum: ["public", "friends", "private"],
+        default: "public"
+      },
+      showOnlineStatus: {
+        type: Boolean,
+        default: true
+      },
+      dataCollection: {
+        type: Boolean,
+        default: false
+      }
     }
   },
   {

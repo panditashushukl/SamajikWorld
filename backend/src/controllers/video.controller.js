@@ -1,4 +1,4 @@
-import {isValidObjectId} from "mongoose"
+import mongoose, {isValidObjectId} from "mongoose"
 import {Video} from "../models/video.model.js"
 import {User} from "../models/user.model.js"
 import {ApiError} from "../utils/ApiError.js"
@@ -18,10 +18,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         username,
     } = req.query
 
-    if (!query && !username) {
-        throw new ApiError(400, "Username or Query is required to get all videos")
-    }
-
+    // Allow public fetch of videos. If no query/username provided, return published videos for home page.
     const pageNum = Math.max(1, parseInt(page, 10) || 1)
     const limitNum = Math.max(1, parseInt(limit, 10) || 10)
     const skip = (pageNum - 1) * limitNum
@@ -29,19 +26,20 @@ const getAllVideos = asyncHandler(async (req, res) => {
     const filter = {}
 
     if (query) {
-        filter.title = { $regex: query, $options: 'i' } 
+        filter.title = { $regex: query, $options: 'i' }
         filter.isPublished = true
-    }
-
-    else if (username) {
+    } else if (username) {
         const user = await User.findOne({ username })
         if (!user) {
             throw new ApiError(404, "User not found")
         }
-        if (user._id.toString()!==req.user._id.toString()) {
+        if (req.user && user._id.toString() !== req.user._id.toString()) {
             filter.isPublished = true
         }
         filter.owner = user._id
+    } else {
+        // No query or username → return only published videos for homepage
+        filter.isPublished = true
     }
 
     const allowedSortFields = ['createdAt', 'title', 'views', 'likes']
@@ -88,6 +86,12 @@ const getAllVideos = asyncHandler(async (req, res) => {
                 createdAt: 1,
                 likes: 1,
                 owner: {
+                    _id: "$ownerDetails._id",
+                    fullName: "$ownerDetails.fullName",
+                    username: "$ownerDetails.username",
+                    avatar: "$ownerDetails.avatar"
+                },
+                Owner: {
                     _id: "$ownerDetails._id",
                     fullName: "$ownerDetails.fullName",
                     username: "$ownerDetails.username",
@@ -180,13 +184,19 @@ const publishAVideo = asyncHandler(async (req, res) => {
         duration
     })
     await video.save()
+    // populate owner info to match frontend expectations (video.Owner)
+    const ownerDoc = await User.findById(owner).select("_id fullName username avatar");
+    const result = {
+        ...video.toObject(),
+        Owner: ownerDoc
+    };
 
     return res
     .status(200)
     .json(
         new ApiResponse(
             200,
-            video,
+            result,
             "Video Published Successfully"
         )
     )
@@ -199,7 +209,14 @@ const getVideoById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Video Id is required")
     }
 
+    const userId = req.user?._id ? new mongoose.Types.ObjectId(req.user._id) : null
+
     const videoAggregation = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId)
+            }
+        },
         {
             $lookup: {
                 from: "users",
@@ -215,6 +232,28 @@ const getVideoById = asyncHandler(async (req, res) => {
             }
         },
         {
+            $lookup: {
+                from: "subscriptions",
+                localField: "owner",
+                foreignField: "channel",
+                as: "subscribers"
+            }
+        },
+        {
+            $lookup: {
+                from: "likes",
+                let: { videoId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $eq: ["$video", "$$videoId"] }
+                        }
+                    }
+                ],
+                as: "likes"
+            }
+        },
+        {
             $project:{
                 _id: 1,
                 videoFile: 1,
@@ -222,13 +261,57 @@ const getVideoById = asyncHandler(async (req, res) => {
                 description: 1,
                 thumbnail: 1,
                 duration: 1,
+                view: "$views",
                 views: 1,
                 isPublished: 1,
+                createdAt: 1,
+                likeCount: { $size: "$likes" },
+                isLiked: {
+                    $cond: [
+                        userId,
+                        {
+                            $ne: [
+                                {
+                                    $size: {
+                                        $filter: {
+                                            input: "$likes",
+                                            as: "like",
+                                            cond: { $eq: ["$$like.likedBy", userId] }
+                                        }
+                                    }
+                                },
+                                0
+                            ]
+                        },
+                        false
+                    ]
+                },
                 owner: {
                     _id: "$ownerDetails._id",
                     fullName: "$ownerDetails.fullName",
                     username: "$ownerDetails.username",
-                    avatar: "$ownerDetails.avatar"
+                    avatar: "$ownerDetails.avatar",
+                    subscriberCount: { $size: "$subscribers" },
+                    isSubscribed: {
+                        $cond: [
+                            userId,
+                            {
+                                $ne: [
+                                    {
+                                        $size: {
+                                            $filter: {
+                                                input: "$subscribers",
+                                                as: "sub",
+                                                cond: { $eq: ["$$sub.subscriber", userId] }
+                                            }
+                                        }
+                                    },
+                                    0
+                                ]
+                            },
+                            false
+                        ]
+                    }
                 }
             }
         }
@@ -240,6 +323,15 @@ const getVideoById = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Video not found")
     }
 
+    // If video is not published, only the owner can access it
+    if (!video.isPublished) {
+        const isOwner = req.user && video.owner && 
+            req.user._id.toString() === video.owner._id.toString()
+        if (!isOwner) {
+            throw new ApiError(404, "Video not found")
+        }
+    }
+    
     return res
     .status(200)
     .json(
@@ -249,6 +341,34 @@ const getVideoById = asyncHandler(async (req, res) => {
             "Video fetched Successfully"
         )
     )
+})
+
+const incrementVideoViews = asyncHandler(async (req, res) => {
+    const { videoId } = req.params
+
+    if (!videoId || !isValidObjectId(videoId)) {
+        throw new ApiError(400, "Video Id is required")
+    }
+
+    const updated = await Video.findByIdAndUpdate(
+        videoId,
+        { $inc: { views: 1 } },
+        { new: true }
+    )
+
+    if (!updated) {
+        throw new ApiError(404, "Video not found")
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                { views: updated.views },
+                "View count incremented"
+            )
+        )
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
@@ -283,12 +403,16 @@ const updateVideo = asyncHandler(async (req, res) => {
         {new:true}
     )
 
+    // include Owner populated for frontend
+    const ownerDoc = video ? await User.findById(video.owner).select("_id fullName username avatar") : null
+    const result = video ? { ...video.toObject(), Owner: ownerDoc } : video
+
     return res
     .status(200)
     .json(
         new ApiResponse(
             200,
-            video,
+            result,
             "Video details updated SuccessFully"
         )
     )
@@ -341,12 +465,16 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
         {new:true}
     )
 
+    // include Owner populated for frontend
+    const ownerDoc = updatedVideo ? await User.findById(updatedVideo.owner).select("_id fullName username avatar") : null
+    const result = updatedVideo ? { ...updatedVideo.toObject(), Owner: ownerDoc } : updatedVideo
+
     return res
     .status(200)
     .json(
         new ApiResponse(
             200,
-            updatedVideo,
+            result,
             "Video Publish status updated Successfully"
         )
     )
@@ -356,6 +484,7 @@ export {
     getAllVideos,
     publishAVideo,
     getVideoById,
+    incrementVideoViews,
     updateVideo,
     deleteVideo,
     togglePublishStatus

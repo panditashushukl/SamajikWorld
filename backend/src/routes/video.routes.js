@@ -6,17 +6,22 @@ import {
     publishAVideo,
     togglePublishStatus,
     updateVideo,
+    incrementVideoViews,
 } from "../controllers/video.controller.js"
 import {verifyJWT} from "../middlewares/auth.middleware.js"
 import {upload} from "../middlewares/multer.middleware.js"
 
 const router = Router();
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
+// Public endpoints
+router.route("/").get(getAllVideos);
+router.route("/:videoId").get(getVideoById);
+router.route("/:videoId/increment-views").post(incrementVideoViews); 
+
+// Protected endpoints
 router
-    .route("/")
-    .get(getAllVideos)
-    .post(
+    .route("/publish-video")
+    .post(verifyJWT,
         upload.fields([
             {
                 name: "videoFile",
@@ -26,17 +31,15 @@ router
                 name: "thumbnail",
                 maxCount: 1,
             },
-            
         ]),
         publishAVideo
     );
 
 router
     .route("/:videoId")
-    .get(getVideoById)
-    .delete(deleteVideo)
-    .patch(upload.single("thumbnail"), updateVideo);
+    .delete(verifyJWT, deleteVideo)
+    .patch(verifyJWT, upload.single("thumbnail"), updateVideo);
 
-router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+router.route("/toggle/publish/:videoId").patch(verifyJWT, togglePublishStatus);
 
 export default router
