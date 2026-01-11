@@ -30,7 +30,7 @@ import settingsReducer from "../slice/settingsSlice.js";
 const persistConfig = {
     key: "my_login_user",
     storage,
-    whitelist: ["login_user", "edit"] // which user to persist.
+    whitelist: ["login_user", "edit"] 
 };
 
 //2. combine reducers.

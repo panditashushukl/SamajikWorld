@@ -6,19 +6,7 @@ export const authService = {
         const res = await makeRequest(() => api.post("/users/login", formData), {
             successMessage: "User logged in successfully!"
         });
-
-        // Store access and refresh tokens in localStorage and set default Authorization header
-        const accessToken = res?.payload?.accessToken;
-        const refreshToken = res?.payload?.refreshToken;
-        if (accessToken) {
-            localStorage.setItem("accessToken", accessToken);
-            api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-        }
-        if (refreshToken) {
-            // storing refresh token in localStorage is less secure but useful for local-dev setups where cookies may not be set; avoid this in production
-            localStorage.setItem("refreshToken", refreshToken);
-        }
-
+        
         return res;
     },
 
@@ -33,9 +21,6 @@ export const authService = {
             successMessage: "User logged out successfully!"
         });
 
-        // Clear stored tokens and Authorization header
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
         delete api.defaults.headers.common["Authorization"];
 
         return res;

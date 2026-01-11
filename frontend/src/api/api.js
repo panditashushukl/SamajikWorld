@@ -14,12 +14,18 @@ api.interceptors.response.use(
         //save the error response for retry.
         const originalRequestResponse = error.config;
 
+            // detect expired-jwt messages returned with non-401 status codes
+            const errorMessage = error.response?.data?.message || "";
+            const isTokenExpired =
+                typeof errorMessage === "string" &&
+                errorMessage.toLowerCase().includes("jwt expired");
+
         //handles unauthorized request errors. Prevent refresh-loop by detecting refresh requests
         const isRefreshRequest =
             originalRequestResponse &&
             (originalRequestResponse.url?.includes("/users/refresh-token") || originalRequestResponse.headers?.["x-skip-refresh"] || originalRequestResponse.skipAuthRefresh);
 
-        if (error.response?.status === 401 && !originalRequestResponse._retry && !isRefreshRequest) {
+        if ((error.response?.status === 401 || isTokenExpired) && !originalRequestResponse._retry && !isRefreshRequest) {
             originalRequestResponse._retry = true;
             console.error("Error caught by the Interceptor :: ", error);
 

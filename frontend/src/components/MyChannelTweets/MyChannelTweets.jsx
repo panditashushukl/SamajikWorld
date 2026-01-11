@@ -39,9 +39,9 @@ function MyChannelTweets() {
                 {channelTweets?.map((tweet) => (
                     <SingleTweetComponent
                         key={tweet._id}
-                        fullName={tweet?.channel?.fullName}
-                        userName={tweet?.channel?.username}
-                        userImage={getImageUrl(tweet?.channel?.avatar, "/user.png") }
+                        fullName={tweet?.owner?.fullName}
+                        userName={tweet?.owner?.username}
+                        userImage={getImageUrl(tweet?.owner?.avatar, "/user.png") }
                         timeAgo={formatTime(tweet?.createdAt)}
                         tweetContent={tweet?.content}
                         likeCount={tweet?.likeCount || 295}

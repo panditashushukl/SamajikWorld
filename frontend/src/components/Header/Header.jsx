@@ -1,12 +1,10 @@
 import React from "react";
 import { Link, useNavigate } from "react-router";
-import SearchIcon from "../SearchIcon";
 import { useSelector } from "react-redux";
 import { getImageUrl } from "../../Helper/getImageUrl";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { LoginDialog } from "../Dialogs/LoginAlertDialog/LoginAlertDialog";
-import SidebarMobile from "../SideBarMobile/SidebarMobile";
 import {
     Clock,
     FolderOpen,
@@ -191,12 +189,15 @@ function Header() {
                                         {isLoggedIn && (
                                             <div className="px-6 py-4 border-b border-neutral-800">
                                                 <div className="flex items-center space-x-3">
-                                                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                                                        <span className="text-black font-semibold text-sm">
-                                                            {isLoggedIn?.fullName?.charAt(
-                                                                0
-                                                            ) || "U"}
-                                                        </span>
+                                                    <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                                                        <img
+                                                            src={getImageUrl(isLoggedIn?.avatar, "/user.png")}
+                                                            alt="User Avatar"
+                                                            className="h-10 w-10 object-cover"
+                                                            onError={(e) => {
+                                                                e.target.src = "/user.png";
+                                                            }}
+                                                        />
                                                     </div>
                                                     <div>
                                                         <p className="text-white font-medium">

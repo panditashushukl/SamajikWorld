@@ -1,4 +1,6 @@
-# SamajikWorld 🌐
+# SamajikWorld  🌐
+
+## [A Video Sharing and Microblogging Platform]
 
 **SamajikWorld** is a production-oriented micro-blogging and video-sharing platform. Unlike standard "tutorial projects," this was engineered as a deep-dive into system design, cloud infrastructure, and DevOps practices to simulate real-world enterprise development.
 
