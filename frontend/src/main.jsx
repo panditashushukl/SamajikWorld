@@ -9,19 +9,11 @@ import {
     RouterProvider
 } from "react-router";
 import {
-    Login,
     Layout,
-    Register,
-    Home,
     EmptyVideoPage,
-    SearchResultVideos,
-    VideoDetailPage,
-    NotFound,
-    ChannelPage,
     ChannelNoVideos,
     EmptyPlayList,
     ChannelPlayList,
-    PlayListPage,
     ChannelEmptyTweets,
     ChannelTweets,
     ChannelEmptySubscribers,
@@ -36,19 +28,31 @@ import {
     EditPersonalInfo,
     EditChannelInfo,
     ChangeUserPassword,
-    Admin,
     EditVideoPopUp,
     DeleteVideoPopUp,
+    FinalChannelTweetPage
+} from "./components/index.js";
+import {
+    Login,
+    Register,
+    Home,
+    SearchResultVideos,
+    VideoDetailPage,
+    NotFound,
+    ChannelPage,
+    PlayListPage,
+    Admin,
     PrivacyPolicyPage,
     TermsAndCondition,
     LikedVideosPage,
     SubscriberList,
     WatchHistoryPage,
     MyPlaylistPage,
-    FinalChannelTweetPage,
     SettingsComponent,
-    SupportComponent
-} from "./components/index.js";
+    SupportComponent,
+    ChannelVideoPage,
+    WatchLaterVideos
+} from "./pages";
 import { Provider } from "react-redux";
 import store from "./store/store.js";
 import { api } from "./api/api";
@@ -58,9 +62,7 @@ const existingAccessToken = localStorage.getItem("accessToken");
 if (existingAccessToken) {
     api.defaults.headers.common["Authorization"] = `Bearer ${existingAccessToken}`;
 }
-import ChannelVideoPage from "./components/MyChannelVideoPage/MyChannelVideoPage.jsx";
 import Test from "./components/Test.jsx";
-import WatchLaterVideos from "./components/WatchLaterVideos/WatchLaterVideos.jsx";
 import ErrorBoundary from "./components/Error/ErrorBoundary.jsx";
 import RouteError from "./components/RouteError/RouteError.jsx";
 

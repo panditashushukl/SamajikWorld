@@ -1,11 +1,11 @@
-import {isValidObjectId} from "mongoose"
-import {Like} from "../models/like.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import { isValidObjectId } from "mongoose"
+import { Like } from "../models/like.model.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
-    const {videoId} = req.params
+    const { videoId } = req.params
     const userId = req.user?._id
 
     if (!userId) {
@@ -17,8 +17,8 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     }
 
     const like = await Like.findOne({
-        video:videoId,
-        likedBy:userId
+        video: videoId,
+        likedBy: userId
     })
 
     let message, result = null
@@ -28,25 +28,25 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     }
     else {
         result = await Like.create({
-            video:videoId,
+            video: videoId,
             likedBy: userId
         })
         message = "like added to Video"
     }
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            result,
-            message
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                result,
+                message
+            )
         )
-    )
 })
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
-    const {commentId} = req.params
+    const { commentId } = req.params
     const userId = req.user?._id
 
     if (!userId) {
@@ -58,8 +58,8 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     }
 
     const like = await Like.findOne({
-        comment:commentId,
-        likedBy:userId
+        comment: commentId,
+        likedBy: userId
     })
 
     let message, result = null
@@ -69,26 +69,26 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     }
     else {
         result = await Like.create({
-            comment:commentId,
+            comment: commentId,
             likedBy: userId
         })
         message = "like added to Comment"
     }
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            result,
-            message
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                result,
+                message
+            )
         )
-    )
 
 })
 
 const toggleTweetLike = asyncHandler(async (req, res) => {
-    const {tweetId} = req.params
+    const { tweetId } = req.params
     const userId = req.user?._id
 
     if (!userId) {
@@ -100,8 +100,8 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     }
 
     const like = await Like.findOne({
-        tweet:tweetId,
-        likedBy:userId
+        tweet: tweetId,
+        likedBy: userId
     })
 
     let message, result = null
@@ -111,74 +111,80 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
     }
     else {
         result = await Like.create({
-            tweet:tweetId,
+            tweet: tweetId,
             likedBy: userId
         })
         message = "like added to Tweet"
     }
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            result,
-            message
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                result,
+                message
+            )
         )
-    )
 }
 )
 
 const getLikedVideos = asyncHandler(async (req, res) => {
-  const userId = req.user._id
+    const userId = req.user._id
 
-  if (!userId) {
-    throw new ApiError(400, "Please login to like.")
-  }
+    if (!userId) {
+        throw new ApiError(400, "Please login to like.")
+    }
 
-  const likedVideos = await Like.find({
-    likedBy: userId,
-    video: { $ne: null }
-  }).populate({
-        path:"video",
+    const likedVideos = await Like.find({
+        likedBy: userId,
+        video: { $ne: null }
+    }).populate({
+        path: "video",
         populate: {
-            path:"owner",
-            select:"_id username fullName avatar"
+            path: "owner",
+            select: "_id username fullName avatar"
         }
     })
 
-  const videos = likedVideos.map(like => like.video);
 
-  res.status(200).json({
-    success: true,
-    count: videos.length,
-    videos
-  })
+
+    const validLikedVideos = likedVideos.filter(like => like.video)
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                validLikedVideos,
+                "liked videos fetched Successfully"
+            )
+        )
 })
 
 const getLikedTweets = asyncHandler(async (req, res) => {
-  const userId = req.user._id
+    const userId = req.user._id
 
-  if (!userId) {
-    throw new ApiError(400, "Please login to like.")
-  }
-  const likedTweet = await Like.find({
-    likedBy: userId,
-    tweet: { $ne: null }
-  }).populate({
-        path:"tweet",
+    if (!userId) {
+        throw new ApiError(400, "Please login to like.")
+    }
+    const likedTweet = await Like.find({
+        likedBy: userId,
+        tweet: { $ne: null }
+    }).populate({
+        path: "tweet",
         populate: {
-            path:"owner",
-            select:"_id username fullName avatar"
+            path: "owner",
+            select: "_id username fullName avatar"
         }
     })
-  const tweet = likedTweet.map(like => like.tweet)
+    const tweet = likedTweet.map(like => like.tweet)
 
-  res.status(200).json({
-    success: true,
-    count: tweet.length,
-    tweet
-  })
+    res.status(200).json({
+        success: true,
+        count: tweet.length,
+        tweet
+    })
 })
 
 export {

@@ -44,7 +44,7 @@ export const toggleSubscriptionInVideo = createAsyncThunk(
                 channelUsername
             );
             console.log(response.payload);
-            
+
             return response.payload;
         } catch (error) {
             return rejectWithValue(error.response.data);
@@ -85,13 +85,13 @@ const videoSlice = createSlice({
     },
     reducers: {
         toggleVideoIsSubscribed(state) {
-            if (state.currentVideo && state.currentVideo.Owner) {
-                const isSubscribed = state.currentVideo.Owner.isSubscribed;
-                state.currentVideo.Owner.isSubscribed = !isSubscribed;
+            if (state.currentVideo && state.currentVideo.owner) {
+                const isSubscribed = state.currentVideo.owner.isSubscribed;
+                state.currentVideo.owner.isSubscribed = !isSubscribed;
                 if (isSubscribed) {
-                    state.currentVideo.Owner.subscriberCount -= 1;
+                    state.currentVideo.owner.subscriberCount -= 1;
                 } else {
-                    state.currentVideo.Owner.subscriberCount += 1;
+                    state.currentVideo.owner.subscriberCount += 1;
                 }
             }
         },
@@ -146,12 +146,12 @@ const videoSlice = createSlice({
         builder.addCase(toggleSubscriptionInVideo.fulfilled, (state, action) => {
             const payload = action.payload;
             // If backend returned updated owner/subscription info, merge into currentVideo.Owner
-            if (payload && state.currentVideo && state.currentVideo.Owner) {
+            if (payload && state.currentVideo && state.currentVideo.owner) {
                 // payload might be the updated Owner or a wrapper; attempt sensible merges
-                const ownerUpdate = payload.Owner || payload;
-                if (ownerUpdate && ownerUpdate.username === state.currentVideo.Owner.username) {
-                    state.currentVideo.Owner = {
-                        ...state.currentVideo.Owner,
+                const ownerUpdate = payload.owner || payload;
+                if (ownerUpdate && ownerUpdate.username === state.currentVideo.owner.username) {
+                    state.currentVideo.owner = {
+                        ...state.currentVideo.owner,
                         ...ownerUpdate
                     };
                 }

@@ -25,12 +25,13 @@ import playlistReducer from "../slice/playlistSlice.js";
 import watchLaterReducer from "../slice/watchLaterSlice.js";
 import channelTweetsReducer from "../slice/channelTweets.js";
 import settingsReducer from "../slice/settingsSlice.js";
+import uiReducer from "../slice/uiSlice.js";
 
 //1. configure reducer.
 const persistConfig = {
     key: "my_login_user",
     storage,
-    whitelist: ["login_user", "edit"] 
+    whitelist: ["login_user", "edit"]
 };
 
 //2. combine reducers.
@@ -58,7 +59,8 @@ const store = configureStore({
         playlist: playlistReducer,
         watchLaterVideos: watchLaterReducer,
         channelTweets: channelTweetsReducer,
-        settings: settingsReducer
+        settings: settingsReducer,
+        ui: uiReducer
     },
     devTools: {
         name: "my shadcn stream sphere."

@@ -18,7 +18,7 @@ export const videoService = {
     },
 
     getVideoDetails: (video_id) => {
-        
+
         return makeRequest(() => api.get(`/videos/${video_id}`), {
             successMessage: "Got the Video."
         });
@@ -30,6 +30,17 @@ export const videoService = {
             errorMessage: "Error occurred.",
             showToast: false
         });
+    },
+
+    async getFeed(type = "all") {
+        try {
+            const response = await api.get(`/feed?type=${type}`);
+            console.log(response.data);
+            
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     },
 
     incrementVideoCount: (video_id) => {

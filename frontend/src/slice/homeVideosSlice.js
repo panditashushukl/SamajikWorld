@@ -3,11 +3,11 @@ import { videoService } from "../service/video.service";
 
 export const fetchHomeVideos = createAsyncThunk(
     "homeVideos/fetchHomeVideos",
-    async (_, { rejectWithValue }) => {
+    async (type = "all", { rejectWithValue }) => {
         try {
-            const response = await videoService.getHomeVideos();
+            const response = await videoService.getFeed(type);
 
-            return response.payload?.videos || [];
+            return response.data?.feed || [];
         } catch (error) {
             console.error("Error fetching home videos:", error);
             return rejectWithValue("Error fetching home videos");
