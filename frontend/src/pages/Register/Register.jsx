@@ -15,6 +15,8 @@ function Register() {
 
     const navigator = useNavigate();
 
+    const [loading, setLoading] = useState(false);
+
     const handleAvatarChange = async (e) => {
         const file = e.target.files[0];
 
@@ -61,6 +63,7 @@ function Register() {
 
     const handleRegisterForm = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const formData = new FormData(e.target);
         if (compressedAvatar) {
             formData.set("avatar", compressedAvatar, compressedAvatar.name);
@@ -73,6 +76,8 @@ function Register() {
             navigator("/login"); // Redirect to login after successful registration
         } catch (error) {
             console.error("User Register Successfully", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -286,9 +291,10 @@ function Register() {
                     {/* Submit Button */}
                     <Button
                         type="submit"
-                        className="bg-[#ae7aff] hover:bg-[#c7a6ff] transition px-4 py-3 rounded-lg text-black font-semibold shadow mt-2"
+                        disabled={loading}
+                        className={`bg-[#ae7aff] hover:bg-[#c7a6ff] transition px-4 py-3 rounded-lg text-black font-semibold shadow mt-2 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
-                        Sign up
+                        {loading ? "Creating Account..." : "Sign up"}
                     </Button>
                 </form>
 

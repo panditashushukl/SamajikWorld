@@ -4,6 +4,7 @@ import store from "./store/store";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
 import { setNavigator } from "./Helper/navigate";
+import FloatingActionMenu from "./components/FloatingActionMenu/FloatingActionMenu";
 
 function App() {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ function App() {
     return (
         <Provider store={store}>
             <div className="h-screen overflow-y-auto bg-[#121212] text-white">
+                <FloatingActionMenu />
                 <Outlet />
             </div>
         </Provider>

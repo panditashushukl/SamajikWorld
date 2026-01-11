@@ -1,16 +1,15 @@
+import React, { useState, useRef } from "react";
 import {
     Dialog,
     DialogClose,
     DialogContent,
     DialogDescription,
+    DialogHeader,
     DialogTitle,
     DialogTrigger
-} from "@radix-ui/react-dialog";
-import React, { useState, useRef } from "react";
-import { DialogHeader } from "../ui/dialog";
+} from "../ui/dialog";
 import {
     Upload,
-    X,
     FileVideo,
     Image,
     AlertCircle,
@@ -18,7 +17,7 @@ import {
 } from "lucide-react";
 import { videoService } from "../../service/video.service";
 
-function UploadVideo() {
+function UploadVideo({ children }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
@@ -210,30 +209,26 @@ function UploadVideo() {
             }}
         >
             <DialogTrigger asChild>
-                <button className="bg-[#ae7aff] text-black flex gap-x-2 px-4 py-2 rounded-lg font-bold shadow hover:bg-[#c7aaff] transition-colors">
-                    <Upload size={20} />
-                    Upload Video
-                </button>
+                {children ? (
+                    children
+                ) : (
+                    <button className="bg-[#ae7aff] text-black flex gap-x-2 px-4 py-2 rounded-lg font-bold shadow hover:bg-[#c7aaff] transition-colors">
+                        <Upload size={20} />
+                        Upload Video
+                    </button>
+                )}
             </DialogTrigger>
 
             <DialogContent
-                className="fixed left-1/2 top-1/2 z-[100] max-w-md sm:max-w-lg md:max-w-3xl w-full -translate-x-1/2 -translate-y-1/2 bg-[#121212] text-white max-h-[95vh] overflow-y-auto rounded-lg shadow-lg focus:outline-none border border-gray-700"
-                style={{ outline: "none" }}
+                className="max-w-md sm:max-w-lg md:max-w-3xl bg-[#121212] text-white max-h-[95vh] overflow-y-auto border-gray-700"
             >
-                <DialogHeader className="sticky top-0 bg-[#121212] z-20 border-b border-gray-700 p-6 flex flex-row items-center justify-between">
-                    <div>
-                        <DialogTitle className="text-xl sm:text-2xl font-bold">
-                            Upload Video
-                        </DialogTitle>
-                        <DialogDescription className="text-gray-400 mt-1">
-                            Share your content with the world
-                        </DialogDescription>
-                    </div>
-                    <DialogClose asChild>
-                        <button className="text-gray-400 hover:text-white transition-colors">
-                            <X size={24} />
-                        </button>
-                    </DialogClose>
+                <DialogHeader className="border-b border-gray-700 pb-4">
+                    <DialogTitle className="text-xl sm:text-2xl font-bold">
+                        Upload Video
+                    </DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                        Share your content with the world
+                    </DialogDescription>
                 </DialogHeader>
 
                 <form
@@ -256,16 +251,14 @@ function UploadVideo() {
                         <div
                             className={`
                                 relative border-2 border-dashed rounded-lg p-8 text-center transition-all cursor-pointer
-                                ${
-                                    dragActive
-                                        ? "border-[#ae7aff] bg-[#ae7aff]/10"
-                                        : "border-gray-600 hover:border-gray-500"
+                                ${dragActive
+                                    ? "border-[#ae7aff] bg-[#ae7aff]/10"
+                                    : "border-gray-600 hover:border-gray-500"
                                 }
                                 ${errors.videoFile ? "border-red-500" : ""}
-                                ${
-                                    selectedVideo
-                                        ? "border-green-500 bg-green-500/10"
-                                        : ""
+                                ${selectedVideo
+                                    ? "border-green-500 bg-green-500/10"
+                                    : ""
                                 }
                             `}
                             onDragEnter={handleDrag}
@@ -376,10 +369,9 @@ function UploadVideo() {
                             placeholder="Enter an engaging title for your video"
                             className={`
                                 w-full border rounded-lg px-4 py-3 bg-transparent outline-none transition-colors
-                                ${
-                                    errors.title
-                                        ? "border-red-500"
-                                        : "border-gray-600 focus:border-[#ae7aff]"
+                                ${errors.title
+                                    ? "border-red-500"
+                                    : "border-gray-600 focus:border-[#ae7aff]"
                                 }
                             `}
                             maxLength={100}
@@ -405,10 +397,9 @@ function UploadVideo() {
                             rows={4}
                             className={`
                                 w-full border rounded-lg px-4 py-3 bg-transparent outline-none resize-none transition-colors
-                                ${
-                                    errors.description
-                                        ? "border-red-500"
-                                        : "border-gray-600 focus:border-[#ae7aff]"
+                                ${errors.description
+                                    ? "border-red-500"
+                                    : "border-gray-600 focus:border-[#ae7aff]"
                                 }
                             `}
                             maxLength={1000}
