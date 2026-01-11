@@ -3,8 +3,13 @@ import { removeUser } from "../slice/userSlice";
 import store from "../store/store";
 import { navigate } from "../Helper/navigate";
 
+const API_BASE_URL =
+    import.meta.env.VITE_ENV === "PRODUCTION"
+        ? `${import.meta.env.VITE_API_PRODUCTION_URL}/v1`
+        : `${import.meta.env.VITE_API_DEV_URL}/v1`;
+
 export const api = axios.create({
-    baseURL: "http://localhost:8000/api/v1",
+    baseURL: API_BASE_URL,
     withCredentials: true
 });
 
@@ -14,11 +19,11 @@ api.interceptors.response.use(
         //save the error response for retry.
         const originalRequestResponse = error.config;
 
-            // detect expired-jwt messages returned with non-401 status codes
-            const errorMessage = error.response?.data?.message || "";
-            const isTokenExpired =
-                typeof errorMessage === "string" &&
-                errorMessage.toLowerCase().includes("jwt expired");
+        // detect expired-jwt messages returned with non-401 status codes
+        const errorMessage = error.response?.data?.message || "";
+        const isTokenExpired =
+            typeof errorMessage === "string" &&
+            errorMessage.toLowerCase().includes("jwt expired");
 
         //handles unauthorized request errors. Prevent refresh-loop by detecting refresh requests
         const isRefreshRequest =
@@ -63,7 +68,7 @@ api.interceptors.response.use(
                     console.error(
                         "Error in Response :: ",
                         err.response.data.message ||
-                            "Something went wrong in response"
+                        "Something went wrong in response"
                     );
                 } else if (err.request) {
                     console.error(
