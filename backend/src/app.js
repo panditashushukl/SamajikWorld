@@ -4,10 +4,12 @@ import cors from "cors";
 
 const app = express();
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
-  credentials: true
-}))
+const productionOrigins = [process.env.PROD_ORIGIN1].filter(Boolean);
+const devOrigins = [process.env.DEV_ORIGIN1].filter(Boolean);
+
+const allowedOrigins =
+  process.env.NODE_ENV === "production" ? productionOrigins : devOrigins;
+
 
 app.use(express.json({
   limit: "16kb"
@@ -21,7 +23,6 @@ app.use(express.urlencoded({
 app.use(express.static("public"))
 
 app.use(cookieParser())
-
 
 //Routes import
 import userRouter from './routes/user.routes.js'
@@ -38,7 +39,6 @@ import feedRouter from "./routes/feed.routes.js"
 // Routes Declaration
 const apiVersion = "/api/v1/"
 app.use(`${apiVersion}healthcheck`, healthcheckRouter)
-app.use(`${apiVersion}feed`, feedRouter)
 app.use(`${apiVersion}users`, userRouter)
 app.use(`${apiVersion}tweets`, tweetRouter)
 app.use(`${apiVersion}subscriptions`, subscriptionRouter)
@@ -47,5 +47,6 @@ app.use(`${apiVersion}comments`, commentRouter)
 app.use(`${apiVersion}likes`, likeRouter)
 app.use(`${apiVersion}playlist`, playlistRouter)
 app.use(`${apiVersion}dashboard`, dashboardRouter)
+app.use(`${apiVersion}feed`, feedRouter)
 
 export default app;
