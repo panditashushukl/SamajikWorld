@@ -10,6 +10,20 @@ const devOrigins = [process.env.DEV_ORIGIN1].filter(Boolean);
 const allowedOrigins =
   process.env.NODE_ENV === "production" ? productionOrigins : devOrigins;
 
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+  })
+);
+
 
 app.use(express.json({
   limit: "16kb"
